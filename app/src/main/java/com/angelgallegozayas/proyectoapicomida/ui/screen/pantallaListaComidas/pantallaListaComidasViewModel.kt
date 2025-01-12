@@ -14,14 +14,26 @@ class PantallaListaComidasViewModel : ViewModel() {
     private val _comidas = MutableStateFlow<List<Meal>>(emptyList())
     val comidas: StateFlow<List<Meal>> = _comidas
 
+    // Flow para el error
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
     init {
         obtenerComidas()
     }
 
     private fun obtenerComidas() {
         viewModelScope.launch {
-            val listaComidas = repositoryList.getListaComidas()
-            _comidas.value = listaComidas
+            try {
+                val listaComidas = repositoryList.getListaComidas()
+                _comidas.value = listaComidas
+                if (listaComidas.isEmpty()) {
+                    _error.value = "No se encontraron comidas."
+                }
+            } catch (e: Exception) {
+                _error.value = "Error al obtener las comidas: ${e.localizedMessage}"
+                _comidas.value = emptyList() // En caso de error, vaciar lista
+            }
         }
     }
 }
