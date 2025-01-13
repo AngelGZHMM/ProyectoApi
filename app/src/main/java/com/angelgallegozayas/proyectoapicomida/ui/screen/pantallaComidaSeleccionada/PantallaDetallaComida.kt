@@ -102,7 +102,7 @@ import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
                 comida.strIngredient18,
                 comida.strIngredient19,
                 comida.strIngredient20
-            ).filterNotNull()  // Filtra los valores nulos
+            )  // Filtra los valores nulos
 
             ListaIngredientes(strIngredients)
 
