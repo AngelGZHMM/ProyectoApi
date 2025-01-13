@@ -26,9 +26,6 @@ import coil.compose.AsyncImage
 import com.angelgallegozayas.proyectoapicomida.data.model.Meal
 import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
 
-suspend fun comidaSeleccionada(comidaId: String): Meal? {
-    return  repositoryList.getComidaPorId(comidaId)
-}
 
 
 @Composable
@@ -41,7 +38,7 @@ suspend fun comidaSeleccionada(comidaId: String): Meal? {
 
     // Llamada a la función suspendida para obtener la comida seleccionada
     LaunchedEffect(comidaId) {
-        val comida = comidaSeleccionada(comidaId) // Llamada a la función suspendida
+        val comida = repositoryList.getComidaPorId(comidaId)
         comidaState.value = comida
     }
 
