@@ -1,7 +1,5 @@
 package com.angelgallegozayas.proyectoapicomida.data.model
 
-import javax.microedition.khronos.opengles.GL10
-
 data class Meal(
     val idMeal: String,
     val strMeal: String,

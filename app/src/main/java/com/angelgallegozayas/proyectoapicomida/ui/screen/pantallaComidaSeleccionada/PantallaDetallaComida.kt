@@ -102,7 +102,7 @@ import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
                 comida.strIngredient18,
                 comida.strIngredient19,
                 comida.strIngredient20
-            )  // Filtra los valores nulos
+            )
 
             ListaIngredientes(strIngredients)
 
@@ -144,6 +144,7 @@ fun ListaIngredientes(strIngredients: List<String>) {
     } } // Lista de estados para cada checkbox
 
     for ((index, ingrediente) in strIngredients.withIndex()) {
+        // Filtra los valores nulos o vacíos
         if (ingrediente.isEmpty()) {
             break // Detiene el ciclo si se encuentra un valor vacío
         }
