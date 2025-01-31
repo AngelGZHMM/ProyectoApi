@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "342792017708",
+    "project_id": "proyectoapicomida",
+    "storage_bucket": "proyectoapicomida.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342792017708:android:14a6607e9495d157f87e89",
+        "android_client_info": {
+          "package_name": "com.angelgallegozayas.proyectoapicomida"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "342792017708-hp8sa0slhqo5njd5b6qusmrhvttnv3du.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.angelgallegozayas.proyectoapicomida",
+            "certificate_hash": "33057071f688f9b59451771a609459361116239e"
+          }
+        },
+        {
+          "client_id": "342792017708-7ufqg495gqhjbun6ddgpoo8iniaqlu22.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiZBxQsJRZSyphHzpAtszrRVHzq4GP90o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "342792017708-7ufqg495gqhjbun6ddgpoo8iniaqlu22.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

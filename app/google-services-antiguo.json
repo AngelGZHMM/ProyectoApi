@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "342792017708",
+    "project_id": "proyectoapicomida",
+    "storage_bucket": "proyectoapicomida.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342792017708:android:14a6607e9495d157f87e89",
+        "android_client_info": {
+          "package_name": "com.angelgallegozayas.proyectoapicomida"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiZBxQsJRZSyphHzpAtszrRVHzq4GP90o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

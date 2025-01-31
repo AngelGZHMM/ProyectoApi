@@ -10,3 +10,9 @@ object PantallaListaComidas
 
 @Serializable
 data class PantallaDetalleComida(val id: String)
+
+@Serializable
+object Conectado
+
+@Serializable
+object ContraseñaOlvidada
