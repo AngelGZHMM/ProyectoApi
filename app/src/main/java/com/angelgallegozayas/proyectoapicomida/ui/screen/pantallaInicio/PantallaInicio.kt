@@ -1,6 +1,6 @@
 package com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaInicio
 
-import android.R
+import com.angelgallegozayas.proyectoapicomida.R
 import com.angelgallegozayas.proyectoapicomida.data.AuthManager
 import com.angelgallegozayas.proyectoapicomida.ui.theme.Purple40
 import android.content.Context
@@ -62,6 +62,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun PantallaInicioScreen(
@@ -234,7 +235,7 @@ fun PantallaInicioScreen(
                         }
                     },
                     text = "Continuar como invitado",
-                    icon = R.drawable.ic_delete,
+                    icon = R.drawable.ic_incognito,
                     color = Color(0xFF363636),
                     cargando = auth.progressBarAnonimous.observeAsState().value?:false
                 )
@@ -245,7 +246,7 @@ fun PantallaInicioScreen(
                         googleSignLauncher.launch(auth.getGoogleSignInIntent())
                     },
                     text = "Continuar con Google",
-                    icon = R.drawable.ic_menu_add,
+                    icon = R.drawable.ic_google,
                     color = Color(0xFFF1F1F1),
                     cargando = auth.progressBarGoogle.observeAsState().value ?: false
                 )
@@ -265,17 +266,17 @@ fun BtnGoogle(onClick: () -> Unit, text: String, icon: Int, color: Color, cargan
             .height(50.dp),
         border = BorderStroke(
             width = 2.dp,
-            color = if (icon == R.drawable.alert_light_frame) color else Color.Gray
+            color = if (icon == R.drawable.ic_launcher_foreground) color else Color.Gray
         ),
         colors = ButtonColors(
             containerColor = color,
-            contentColor = if (icon == R.drawable.btn_dialog) Color.White else Color.Black,
+            contentColor = if (icon == R.drawable.ic_launcher_background) Color.White else Color.Black,
             disabledContainerColor = Color.Gray,
             disabledContentColor = Color.Gray,
         )
     ) {
         if (cargando) {
-            if (icon == R.drawable.bottom_bar) {
+            if (icon == R.drawable.ic_launcher_background) {
                 CircularProgressIndicator(
                     color = Color.White,
                     modifier = Modifier.size(30.dp),
@@ -305,7 +306,7 @@ fun BtnGoogle(onClick: () -> Unit, text: String, icon: Int, color: Color, cargan
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = text,
-                    color = if (icon == R.drawable.dialog_frame) Color.White else Color.Black
+                    color = if (icon == R.drawable.ic_launcher_foreground) Color.White else Color.Black
                 )
             }
         }

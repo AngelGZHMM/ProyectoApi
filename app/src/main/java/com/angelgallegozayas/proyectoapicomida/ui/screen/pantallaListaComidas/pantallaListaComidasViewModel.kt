@@ -1,10 +1,13 @@
 package com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaListaComidas
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.angelgallegozayas.proyectoapicomida.data.AuthManager
 import com.angelgallegozayas.proyectoapicomida.data.model.Meal
 import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
+import com.angelgallegozayas.proyectoapicomida.ui.navegacion.PantallaListaComidas
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -12,6 +15,9 @@ import kotlinx.coroutines.launch
 class PantallaListaComidasViewModel : ViewModel() {
 
     val usuario = AuthManager()
+//    La variable pantalla actual guarda un string que representa la pantalla actual
+//    que se muestra en la aplicación.La cual se ira modificando conforme el usuario navega
+    val pantallaActual = mutableStateOf("Inicio")
 
     // Flow para la lista de comidas
     private val _comidas = MutableStateFlow<List<Meal>>(emptyList())

@@ -95,4 +95,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("com.google.android.gms:play-services-auth:20.7.0") // Usa la última versión
 
+    implementation("com.google.firebase:firebase-firestore-ktx")// Firestore
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3") // Corrutinas con Firestore
+
 }

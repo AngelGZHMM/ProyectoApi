@@ -2,6 +2,7 @@ package com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaComidaSeleccio
 
 
 import android.graphics.Color.rgb
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,7 +24,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.angelgallegozayas.proyectoapicomida.data.AuthManager
+import com.angelgallegozayas.proyectoapicomida.data.firebase.FirestoreViewModel
 import com.angelgallegozayas.proyectoapicomida.data.model.Meal
+import com.angelgallegozayas.proyectoapicomida.data.model.RecetaUser
 import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
 
 
@@ -31,15 +35,28 @@ import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
 @Composable
  fun PantallaDetalleComidaScreen(
     comidaId: String,
-    navigateToBack: () -> Unit
-) {
-    // Estado para almacenar la comida seleccionada
-    val comidaState = remember { mutableStateOf<Meal?>(null) }
+    navigateToBack: () -> Unit,
+    firestoreviewModel: FirestoreViewModel,
+    navegaraModificarReceta: (recipeId: String) -> Unit,
+    auth: AuthManager
 
-    // Llamada a la función suspendida para obtener la comida seleccionada
+    ) {
+    // Estados
+    val comidaState = remember { mutableStateOf<Meal?>(null) }
+    val creadorDeReceta = remember { mutableStateOf<RecetaUser?>(null) }
+
     LaunchedEffect(comidaId) {
+        // Cargar receta
         val comida = repositoryList.getComidaPorId(comidaId)
+            ?: firestoreviewModel.cargarMealPorId(comidaId)
+
         comidaState.value = comida
+
+        // Si la receta pertenece a un usuario, carga su creador
+        comida?.idMeal?.let { id ->
+            val recetaConCreador = firestoreviewModel.cargarRecetaPorIdConCreador(id)
+            creadorDeReceta.value = recetaConCreador
+        }
     }
 
 
@@ -67,7 +84,26 @@ import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
                 modifier = Modifier
                     .size(200.dp)
                     .padding(8.dp)
+
             )
+            if(comida.strMealDescription!="") {
+            Text(
+                text = "Descripcion",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+                    .padding(top = 10.dp)
+
+                    .background(Color(rgb(233, 206, 68)),shape = RoundedCornerShape(16.dp))
+                    .padding(5.dp)
+            )
+            // Descripción
+            Text(
+                text = comida.strMealDescription,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            }
+
 
 
             Text(
@@ -80,6 +116,7 @@ import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
                     .padding(5.dp)
 
             )
+
             // Lista de ingredientes
             val strIngredients: List<String> = listOf(
                 comida.strIngredient1,
@@ -119,12 +156,22 @@ import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
+            // En el Button de Modificar:
+            if(creadorDeReceta.value?.idusuario == auth.getCurrentUser()?.uid) {
+                Button(onClick = {
+                    navegaraModificarReceta(comida.idMeal)
+                }) {
+                    Text(text = "Modificar")
+                }
+            }
 
             Button(onClick = navigateToBack,
                 modifier = Modifier.padding(bottom = 30.dp))
                 {
                 Text(text = "Volver")
             }
+
+
 
 
 

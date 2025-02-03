@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ProyectoApiComida</string>
     <string name="default_web_client_id">342792017708-7ufqg495gqhjbun6ddgpoo8iniaqlu22.apps.googleusercontent.com</string>
+    <string name="nombre_app">TU RECETARIO</string>
 
 </resources>

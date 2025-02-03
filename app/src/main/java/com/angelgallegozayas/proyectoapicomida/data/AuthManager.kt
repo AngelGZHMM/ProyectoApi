@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -21,7 +20,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class AuthManager : ViewModel() {
@@ -125,6 +123,22 @@ class AuthManager : ViewModel() {
     fun signOut() {
         auth.signOut()
         googleSignInClient.signOut()
+    }
+
+//    updatename
+    suspend fun updateName(name: String) {
+        _progressBar.value = true
+        _authState.value = try {
+            val user = auth.currentUser
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
+            user?.updateProfile(profileUpdates)?.await()
+            AuthRes.Success(user)
+        } catch (e: Exception) {
+            AuthRes.Error(e.message ?: "Error al actualizar el nombre")
+        }
+        _progressBar.value = false
     }
 
     sealed class AuthRes<out T> {

@@ -9,6 +9,14 @@ object PantallaInicio
 object PantallaListaComidas
 
 @Serializable
+object PantallaPerfil
+@Serializable
+object PantallaCrearReceta
+
+@Serializable
+object PantallaListaFavoritosScreen
+
+@Serializable
 data class PantallaDetalleComida(val id: String)
 
 @Serializable

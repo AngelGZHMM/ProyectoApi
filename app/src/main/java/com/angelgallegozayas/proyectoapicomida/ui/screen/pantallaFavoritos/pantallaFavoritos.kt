@@ -1,6 +1,6 @@
-package com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaListaComidas
+package com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaFavoritos
 
-import android.util.Log
+import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaListaComidas.PantallaListaComidasViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +30,7 @@ import com.angelgallegozayas.proyectoapicomida.data.model.Meal
 import com.angelgallegozayas.proyectoapicomida.data.scaffold.TopBar
 
 @Composable
-fun PantallaListaComidasScreen(
+fun PantallaListaFavoritosScreen(
     auth: AuthManager,
     viewModel: PantallaListaComidasViewModel,
     navigateToDetalle: (String) -> Unit,
@@ -41,16 +41,28 @@ fun PantallaListaComidasScreen(
     navigateToFavoritos: () -> Unit,
     navegarAPantallaListaComidas: () -> Unit,
 
-
-
-
     ) {
-    firestoreviewModel.updateUserId(auth.getCurrentUser()?.uid ?: "Anonimo")
+    //val comidasState by viewModel.comidas.collectAsStateWithLifecycle()
     firestoreviewModel.listarTodaslasRecetas()
-    viewModel.pantallaActual.value = "Listado"
+    viewModel.pantallaActual.value = "Favoritos"
 
     val comidasCreadas by firestoreviewModel.firestoreMeals.observeAsState(emptyList())
     val comidasState by viewModel.comidas.collectAsStateWithLifecycle()
+    val listacomidasTotal = comidasState + comidasCreadas
+//    datos comidas favoritas solo contiene el id del usuario y una lista de favoritos , tenemos que recorrer la lista de favoritos en la cual obtendremos
+//    el id de la receta y compararlo con la lista de comidas totales para obtener las comidas favoritas
+    val datoscomidasFavoritas = firestoreviewModel.favorites.collectAsStateWithLifecycle()
+    val comidasFavoritas = mutableListOf<Meal>()
+    datoscomidasFavoritas.value.forEach { favoritos ->
+        listacomidasTotal.forEach { comida ->
+            if (favoritos.idMeal == comida.idMeal) {
+                comidasFavoritas.add(comida)
+            }
+        }
+    }
+
+
+
     val errorState by viewModel.error.collectAsStateWithLifecycle()
     val user = auth.getCurrentUser()
     val progressBar by firestoreviewModel.isLoading.observeAsState(false)
@@ -82,8 +94,7 @@ fun PantallaListaComidasScreen(
                                 navigateToInicio,
                                 navigateToFavoritos,
                                 viewModel,
-                                navegarAPantallaListaComidas
-                                )
+                                navegarAPantallaListaComidas)
                         }
                     ) { innerPadding ->
                         Column(
@@ -106,15 +117,7 @@ fun PantallaListaComidasScreen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     state = scrollState // Evita que la lista vuelva al inicio
                                 ) {
-                                    items(comidasState) { comida ->
-                                        ComidaCard(
-                                            comida = comida,
-                                            navigateToDetalle = navigateToDetalle,
-                                            auth = auth,
-                                            firestoreviewModel = firestoreviewModel
-                                        )
-                                    }
-                                    items(comidasCreadas) { comida ->
+                                    items(comidasFavoritas) { comida ->
                                         ComidaCard(
                                             comida = comida,
                                             navigateToDetalle = navigateToDetalle,
@@ -175,10 +178,9 @@ private fun ComidaCard(
     comida: Meal,
     navigateToDetalle: (String) -> Unit
 ) {
-
-
     val favorites by firestoreviewModel.favorites.collectAsStateWithLifecycle()
     val isFavorited = favorites.any { it.idMeal == comida.idMeal }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
