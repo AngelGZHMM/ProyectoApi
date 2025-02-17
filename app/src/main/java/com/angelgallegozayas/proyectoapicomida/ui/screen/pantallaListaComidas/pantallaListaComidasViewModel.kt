@@ -1,13 +1,11 @@
 package com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaListaComidas
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.angelgallegozayas.proyectoapicomida.data.AuthManager
 import com.angelgallegozayas.proyectoapicomida.data.model.Meal
 import com.angelgallegozayas.proyectoapicomida.data.repositories.repositoryList
-import com.angelgallegozayas.proyectoapicomida.ui.navegacion.PantallaListaComidas
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

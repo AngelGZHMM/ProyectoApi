@@ -24,3 +24,6 @@ object Conectado
 
 @Serializable
 object ContraseñaOlvidada
+
+@Serializable
+data class PantallaModificarReceta(val id: String)

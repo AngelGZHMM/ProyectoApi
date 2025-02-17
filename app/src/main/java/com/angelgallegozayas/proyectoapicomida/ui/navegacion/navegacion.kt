@@ -1,6 +1,11 @@
 package com.angelgallegozayas.proyectoapicomida.ui.navegacion
 
+import android.util.Log
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,7 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.angelgallegozayas.proyectoapicomida.data.AuthManager
 import com.angelgallegozayas.proyectoapicomida.data.firebase.FirestoreViewModel
-import com.angelgallegozayas.proyectoapicomida.ui.navegacion.PantallaCrearReceta
+import com.angelgallegozayas.proyectoapicomida.data.model.Meal
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaComidaSeleccionada.PantallaDetalleComidaScreen
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaCrearReceta.PantallaCrearReceta
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaFavoritos.PantallaListaFavoritosScreen
@@ -17,7 +22,9 @@ import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaInicio.Contrase
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaInicio.PantallaInicioScreen
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaListaComidas.PantallaListaComidasScreen
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaListaComidas.PantallaListaComidasViewModel
+import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaModificacionReceta.PantallaModificarReceta
 import com.angelgallegozayas.proyectoapicomida.ui.screen.pantallaPerfil.PantallaPerfil
+import androidx.compose.runtime.*
 
 
 @Composable
@@ -104,7 +111,11 @@ fun Navegacion(auth: AuthManager, viewModelFirestore: FirestoreViewModel) {
                 , navigateToBack = {
                     navController.popBackStack()
                 },
-                firestoreviewModel = viewModelFirestore
+                firestoreviewModel = viewModelFirestore,
+                navegaraModificarReceta = {
+                    navController.navigate(PantallaModificarReceta(comidaId))
+                },
+                auth = auth
             )
         }
 
@@ -152,8 +163,39 @@ fun Navegacion(auth: AuthManager, viewModelFirestore: FirestoreViewModel) {
             )
         }
 
+        composable<PantallaModificarReceta> { backStackEntry ->
+            val recipeId = backStackEntry.toRoute<PantallaModificarReceta>().id
+            var meal by remember { mutableStateOf<Meal?>(null) }
+            var isLoading by remember { mutableStateOf(true) }
+
+            // Ejecutamos la función suspend dentro de LaunchedEffect
+            LaunchedEffect(recipeId) {
+                meal = viewModelFirestore.cargarMealPorId(recipeId)
+                isLoading = false
+            }
+
+            if (isLoading) {
+                CircularProgressIndicator() // Indicador de carga mientras se obtiene la receta
+            } else if (meal != null) {
+                PantallaModificarReceta(
+                    initialMeal = meal!!,
+                    auth = auth,
+                    firestoreviewModel = viewModelFirestore,
+                    navigateBack = { navController.popBackStack() }
+                )
+            } else {
+                Text("Error: No se pudo cargar la receta")
+            }
+        }
+
+
 
     }
+}
+
+@Composable
+fun Text(x0: String) {
+    TODO("Not yet implemented")
 }
 
 
