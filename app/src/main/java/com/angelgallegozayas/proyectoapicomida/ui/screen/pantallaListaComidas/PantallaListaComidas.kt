@@ -21,12 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.angelgallegozayas.proyectoapicomida.data.AuthManager
 import com.angelgallegozayas.proyectoapicomida.data.firebase.FirestoreViewModel
 import com.angelgallegozayas.proyectoapicomida.data.model.Meal
+import com.angelgallegozayas.proyectoapicomida.data.model.RecetaUser
 import com.angelgallegozayas.proyectoapicomida.data.scaffold.TopBar
 
 @Composable
@@ -122,13 +124,16 @@ fun PantallaListaComidasScreen(
                                             firestoreviewModel = firestoreviewModel
                                         )
                                     }
-                                    // Tarjeta para agregar receta
+
+//                                    si el usuario es anonimo no puede agregar recetas
+                                    if (user.displayName != null) {
+// Tarjeta para agregar receta
                                     item {
                                         Card(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .wrapContentHeight()
-                                                .clickable {navigateToCrearReceta() }
+                                                .clickable { navigateToCrearReceta() }
                                         ) {
                                             Column(
                                                 modifier = Modifier.background(Color.Green),
@@ -158,6 +163,70 @@ fun PantallaListaComidasScreen(
                                             }
                                         }
                                     }
+
+                                }else{
+                                        item {
+                                            // Estado para controlar la visibilidad del diálogo
+                                            var showDialog by remember { mutableStateOf(false) }
+
+                                            // Si showDialog es true, mostramos el AlertDialog
+                                            if (showDialog) {
+                                                AlertDialog(
+                                                    onDismissRequest = { showDialog = false },
+                                                    title = { Text(text = "Iniciar Sesión") },
+                                                    text = { Text(text = "Debe iniciar sesión para agregar una receta.") },
+                                                    confirmButton = {
+                                                        TextButton(
+                                                            onClick = { showDialog = false }
+                                                        ) {
+                                                            Text("Ok")
+                                                        }
+                                                    }
+                                                )
+                                            }
+
+                                            Card(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .wrapContentHeight()
+                                                    .clickable {
+                                                        // Al hacer click, se activa el diálogo
+                                                        showDialog = true
+                                                    }
+                                            ) {
+                                                Column(
+                                                    modifier = Modifier.background(Color.Gray),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .aspectRatio(1f)
+                                                    ) {
+                                                        Image(
+                                                            painter = rememberAsyncImagePainter("https://png.pngtree.com/png-clipart/20230915/original/pngtree-plus-sign-symbol-simple-design-pharmacy-logo-black-vector-png-image_12186664.png"),
+                                                            contentDescription = "Agregar Receta",
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .heightIn(min = 150.dp),
+                                                            contentScale = ContentScale.Crop
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    Text(
+                                                        text = "Agregar Receta",
+                                                        modifier = Modifier.padding(8.dp),
+                                                        style = MaterialTheme.typography.bodyLarge,
+                                                        color = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+
+
                                 }
                             }
                         }
@@ -176,9 +245,15 @@ private fun ComidaCard(
     navigateToDetalle: (String) -> Unit
 ) {
 
-
     val favorites by firestoreviewModel.favorites.collectAsStateWithLifecycle()
     val isFavorited = favorites.any { it.idMeal == comida.idMeal }
+    val creadorDeReceta = remember { mutableStateOf<RecetaUser?>(null) }
+
+    LaunchedEffect(comida.idMeal) {
+        val recetaConCreador = firestoreviewModel.cargarRecetaPorIdConCreador(comida.idMeal)
+        creadorDeReceta.value = recetaConCreador
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,15 +273,35 @@ private fun ComidaCard(
                         .heightIn(min = 150.dp),
                     contentScale = ContentScale.Crop
                 )
+
+                if (creadorDeReceta.value?.idusuario == auth.getCurrentUser()?.uid) {
+                    Text(
+                        text = "Creado por ti",
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp)
+                            .background(Color.White.copy(alpha = 0.7f)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
+
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = comida.strMeal,
-                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp, top = 8.dp, end = 30.dp),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .background(Color(0xFFB2952A), shape = RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .widthIn(max = 100.dp), // Evita que el cuadro sea muy ancho
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = Color.White,
+                    maxLines = 1, // Limita a 1 líneas para evitar solapamiento
+                    overflow = TextOverflow.Ellipsis // Muestra "..." si es muy largo
                 )
+
                 IconButton(
                     onClick = {
                         firestoreviewModel.addFavorito(
@@ -214,12 +309,22 @@ private fun ComidaCard(
                             usuario = auth.getCurrentUser()?.uid ?: "Anonimo"
                         )
                     },
-                    modifier = Modifier.align(Alignment.TopEnd).padding(end = 2.dp)
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 2.dp)
                 ) {
                     if (isFavorited) {
-                        Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Favorito", tint = Color.Red)
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = "Favorito",
+                            tint = Color.Red
+                        )
                     } else {
-                        Icon(imageVector = Icons.Outlined.FavoriteBorder, contentDescription = "No es favorito", tint = Color.Gray)
+                        Icon(
+                            imageVector = Icons.Outlined.FavoriteBorder,
+                            contentDescription = "No es favorito",
+                            tint = Color.Gray
+                        )
                     }
                 }
             }

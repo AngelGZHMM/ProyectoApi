@@ -120,55 +120,6 @@ fun addReceta(recetaItem: Meal,userid : String) {
         }
     }
 
-    // 🗑 Función para quitar favorito y actualizar estado
-//    fun removeFavorito(item: String) {
-//        _isLoading.value = true
-//        viewModelScope.launch {
-//            try {
-//                firestoreManager.deleteReceta( item)
-//                _syncState.value = SyncState.Success("Favorito eliminado")
-//
-//                //  Forzar actualización de favoritos
-//                actualizarFavoritos()
-//            } catch (e: Exception) {
-//                _syncState.value = SyncState.Error(e)
-//            }
-//            _isLoading.value = false
-//        }
-//    }
-
-    //  Método para forzar la actualización de la lista de favoritos
-//    private fun actualizarFavoritos() {
-//        viewModelScope.launch {
-//            val nuevosFavoritos = firestoreManager.getAgregadosPorUsuario(userId.toString()).first()
-//                .map { favoritoDB ->
-//                    Meal(
-//                        idMeal = favoritoDB.idreceta,  // Ajusta los nombres según tu modelo,
-//                    )
-//                }
-//            _favorites.postValue(nuevosFavoritos)
-//        }
-//    }
-
-//    listar todos los favoritos
-//    fun listarTodoslosFavoritos() {
-//        viewModelScope.launch {
-//            _isLoading.value = true
-//            try {
-//                val favoritos = firestoreManager.getAgregadosPorUsuario(userId.toString()).first()
-//                    .map { favoritoDB ->
-//                        Meal(
-//                            idMeal = favoritoDB.idreceta,  // Ajusta los nombres según tu modelo,
-//                        )
-//                    }
-//                favorites.value = favoritos
-//            } catch (e: Exception) {
-//                _syncState.value = SyncState.Error(e)
-//            }
-//            _isLoading.value = false
-//        }
-//    }
-
     private val _recetaDetalle = MutableLiveData<RecetaUser?>()
     val recetaDetalle: LiveData<RecetaUser?> = _recetaDetalle
 
@@ -217,6 +168,19 @@ fun addReceta(recetaItem: Meal,userid : String) {
             try {
                 firestoreManager.updateReceta(recetaItem, userid)
                 _syncState.value = SyncState.Success("Receta actualizada correctamente")
+            } catch (e: Exception) {
+                _syncState.value = SyncState.Error(e)
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun eliminarReceta(recetaId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                firestoreManager.deleteReceta(recetaId)
+                _syncState.value = SyncState.Success("Receta eliminada correctamente")
             } catch (e: Exception) {
                 _syncState.value = SyncState.Error(e)
             }
